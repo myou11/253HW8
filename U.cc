@@ -133,6 +133,25 @@ void U::readUTF(int byte1, ifstream & in, string filename) {
 	}
 }
 
+// Create vector to store UTF8 chars from accumulated string
+void U::createUTFVect() {
+	for (uint i = 0; i < charsRead.length(); /* leave incrementing work for body of loop */) {
+		if (bytes(charsRead.at(i)) == 1) {						// evaluate # of bytes a character consists of
+			charsReadVect.push_back(charsRead.substr(i, 1));	// add the char to the vector (no need to error check since readUTF already did)
+			++i;												// incr once because char was 1 byte
+		} else if (bytes(charsRead.at(i)) == 2) {
+			charsReadVect.push_back(charsRead.substr(i, 2));
+			i += 2;
+		} else if (bytes(charsRead.at(i)) == 3) {
+			charsReadVect.push_back(charsRead.substr(i, 3));
+			i += 3;
+		} else if (bytes(charsRead.at(i)) == 4) {
+			charsReadVect.push_back(charsRead.substr(i, 4));
+			i += 4;
+		}
+	}
+}
+
 // Read characters from an input file
 void U::readfile(string filename) {
 	ifstream in(filename);
@@ -156,22 +175,7 @@ void U::readfile(string filename) {
 
 	in.close();		// close the file stream
 
-	// Create vector from this accumulated string
-	for (uint i = 0; i < charsRead.length(); /* leave incrementing work for body of loop */) {
-		if (bytes(charsRead.at(i)) == 1) {						// evaluate # of bytes a character consists of
-			charsReadVect.push_back(charsRead.substr(i, 1));	// add the char to the vector (no need to error check since readUTF already did)
-			++i;												// incr once because char was 1 byte
-		} else if (bytes(charsRead.at(i)) == 2) {
-			charsReadVect.push_back(charsRead.substr(i, 2));
-			i += 2;
-		} else if (bytes(charsRead.at(i)) == 3) {
-			charsReadVect.push_back(charsRead.substr(i, 3));
-			i += 3;
-		} else if (bytes(charsRead.at(i)) == 4) {
-			charsReadVect.push_back(charsRead.substr(i, 4));
-			i += 4;
-		}
-	}
+	createUTFVect(); // create vector from this accumulated string
 }
 
 void U::append(string extra) {

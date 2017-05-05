@@ -7,10 +7,34 @@
 
 #include <fstream>
 #include <iostream>
+#include <iterator>
 #include <map>
 #include <set>
 #include <string>
 #include <vector>
+
+class U;	// forward declaration
+
+class UIter {
+	public:
+		// Ctors
+
+		// Default ctor
+		UIter(U *u = nullptr, int i = 0) : parent(u), index(i) { }
+		
+		// Copy ctor
+		UIter(const UIter & rhs) = default;	// use default b/c it will copy class members already
+
+		// Assignment operator
+		UIter & operator=(const UIter & rhs) = default;	// use default b/c it will copy class members already
+
+		// Dtor
+		~UIter() = default;	// TODO check for memory leaks later
+
+	private:
+		U *parent;	// parent U
+		int index;	// index into accumulated string
+};
 
 class U {
 
@@ -20,6 +44,16 @@ class U {
 		U();
 		U(const U &rhs);
 		U(std::string filename);
+		
+		// Templated iterator ctor
+		template <typename T>
+		U(T it1, T it2) {
+			while (it1 != it2) {
+				charsRead += *it1;
+				++it1;
+			}
+			createUTFVect();
+		} 
 
 		// Assignment operator=
 		const U &operator=(const U &rhs);
@@ -38,6 +72,9 @@ class U {
 
 		// Modified convUTF for reading from a stream and checking valid chars
 		void readUTF(int byte1, std::ifstream &in, std::string filename);
+
+		// Create vector to hold UTF8 chars from accumulated string
+		void createUTFVect();
 
 		// Read characters from an input file
 		void readfile(std::string filename);

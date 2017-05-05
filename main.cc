@@ -1,8 +1,12 @@
 #include "U.h"
 #include "P.h"
 #include <iostream>
+#include <iterator>
+
 using namespace std;
+
 const string pub="/s/bach/a/class/cs253/pub/";   // ~ only works in shells
+
 int main() {
 	try {
 		U u;
@@ -343,6 +347,16 @@ int main() {
 		cout << R"("butter" != constBanana, should be false: )" << ("butter" != constBanana) << '\n';
 		cout << R"("peanut" != constBanana, should be true: )" << ("peanut" != constBanana) << '\n';
 		
+		
+		/* -------------- Iterator testing ----------------*/
+		cout << "\n\n------------- Op Overloading tests ----------------\n\n";
+
+		string vanilla = "vanilla";
+		U bean(vanilla.begin(), vanilla.begin() + 4);	// should be "vani"
+		cout << R"(bean should be "vani": )" << bean << '\n';
+
+		
+
 		return 0;
 	}
 	catch (const string &msg) {
