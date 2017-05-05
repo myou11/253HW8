@@ -355,7 +355,10 @@ int main() {
 		U bean(vanilla.begin(), vanilla.begin() + 4);	// should be "vani"
 		cout << R"(bean should be "vani": )" << bean << '\n';
 
-		
+		U::iterator it = bean.begin();
+		for (auto cp : bean)
+			cout << R"(Using for each loop with iterators, should be "vanilla": )" << *cp;
+		cout << '\n';	// print new line after above for loop
 
 		return 0;
 	}

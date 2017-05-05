@@ -13,32 +13,14 @@
 #include <string>
 #include <vector>
 
-class U;	// forward declaration
-
-class UIter {
-	public:
-		// Ctors
-
-		// Default ctor
-		UIter(U *u = nullptr, int i = 0) : parent(u), index(i) { }
-		
-		// Copy ctor
-		UIter(const UIter & rhs) = default;	// use default b/c it will copy class members already
-
-		// Assignment operator
-		UIter & operator=(const UIter & rhs) = default;	// use default b/c it will copy class members already
-
-		// Dtor
-		~UIter() = default;	// TODO check for memory leaks later
-
-	private:
-		U *parent;	// parent U
-		int index;	// index into accumulated string
-};
+class UIter;
 
 class U {
 
 	public:
+
+		// typedef UIter as iterator
+		typedef UIter iterator;
 
 		// Ctors
 		U();
@@ -163,6 +145,14 @@ class U {
 		// s != u
 		friend bool operator!=(const std::string & s, const U & rhs);
 
+		// Iterator methods
+		
+		// Returns iterator "pointing" to beginning of accumulated string
+		iterator begin();
+
+		// Returns iterator "pointing" to one index past accumulated string
+		iterator end();
+
 	private:
 
 		std::string charsRead; 						// stores all characters read thus far
@@ -180,5 +170,81 @@ bool operator==(const std::string & s, const U & rhs);
 
 // s != u
 bool operator!=(const std::string & s, const U & rhs);
+
+class UIter {
+	public:
+		// Ctors
+
+		// Default ctor
+		UIter(U *u = nullptr, int i = 0) : parent(u), index(i) { }
+		
+		// Copy ctor
+		UIter(const UIter & rhs) = default;	// use default b/c it will copy class members already
+
+		// Assignment operator
+		UIter & operator=(const UIter & rhs) = default;	// use default b/c it will copy class members already
+
+		// Dtor
+		~UIter() = default;	// TODO check for memory leaks later
+
+		// Indirection
+		int operator*() const {
+			if (!parent) 	// if this iterator is not associated with a U object
+				throw std::string("Attempting to indirect uninitialized iterator");
+			if (index == parent->size())	// if the index of the current iterator is one past the elements
+				throw std::string("Attempting to inderect end() iterator");
+			
+			return parent->codepoint(index);	// use codepoint of the U obj and the current iterator's index to get codepoint
+		}
+
+		// operator==
+		bool operator==(const UIter & rhs) const {
+			if (!parent || !rhs.parent)	// both iterators must not be nullptr
+				throw std::string("Attempting to compare uninitialized iterator");
+			if (parent != rhs.parent)	// both iterators must be associated with the same U object
+				throw std::string("Attempting to compare iterators from different U objects");
+			return index == rhs.index;	// compare indices of the iterators
+		}
+
+		bool operator!=(const UIter & rhs) const {
+			return !(*this == rhs);	// negate the result of operator==
+		}
+
+		UIter & operator++() {	// pre-incr b/c no dummy int arg
+			if (!parent)	// if iterator is uninitialized
+				throw std::string("Attempting to increment uninitialized iterator");
+			if (index == parent->size())	// can't incr if iterator is already at end (one past last item)
+				throw std::string("Attempting to increment end() iterator");
+
+			++index;		// incr the index
+			return *this;	// return the altered iter
+		}
+
+		UIter operator++(int) {	// post-incr b/c of dummy int arg
+			const auto save = *this;	// save the state
+			++*this;					// incr the iter
+			return save;				// return the prev state
+		}
+
+		UIter & operator--() {	// pre-decr b/c no dummy int arg
+			if (!parent)	// if iterator is uninitialized
+				throw std::string("Attempting to decrement uninitialized iterator");
+			if (index == 0)	// can't decr if iterator is at beginning
+				throw std::string("Attempting to decrement begin() iterator");
+
+			--index;		// decrement the index
+			return *this;	// return the altered iter
+		}
+
+		UIter operator--(int) {	// post-decr b/c of dummy int arg
+			const auto save = *this;	// save the state
+			--*this;					// decr the iter
+			return *this;				// return the prev state
+		}
+
+	private:
+		U *parent;	// parent U
+		int index;	// index into accumulated string
+};
 
 #endif
