@@ -439,3 +439,24 @@ bool U::operator!=(const string & s) const {
 bool operator!=(const string & s, const U & rhs) {
 	return !(s == rhs);	// negate the result of s == u
 }
+
+// Iterator methods
+U::iterator U::begin() const {
+	return U::iterator(this, 0);
+}
+
+U::iterator U::end() const {
+	return U::iterator(this, size());
+}
+
+int U::front() const {	// TODO check if should be const
+	if (size() == 0)	// if nothing to 
+		throw string("Attempting to retrieve front() item, but string is empty");
+	return codepoint(0);
+}
+
+int U::back() const { // TODO check if should be const
+	if (size() == 0)
+		throw string("Attempting to retrieve back() item, but string is empty");
+	return codepoint(size() - 1);
+}

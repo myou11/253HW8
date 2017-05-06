@@ -148,10 +148,16 @@ class U {
 		// Iterator methods
 		
 		// Returns iterator "pointing" to beginning of accumulated string
-		iterator begin();
+		iterator begin() const;
 
 		// Returns iterator "pointing" to one index past accumulated string
-		iterator end();
+		iterator end() const;
+
+		// Returns first int codepoint by value
+		int front() const;
+
+		// Returns last int codepoint by value
+		int back() const;
 
 	private:
 
@@ -176,7 +182,7 @@ class UIter {
 		// Ctors
 
 		// Default ctor
-		UIter(U *u = nullptr, int i = 0) : parent(u), index(i) { }
+		UIter(const U *u = nullptr, int i = 0) : parent(u), index(i) { }
 		
 		// Copy ctor
 		UIter(const UIter & rhs) = default;	// use default b/c it will copy class members already
@@ -192,7 +198,7 @@ class UIter {
 			if (!parent) 	// if this iterator is not associated with a U object
 				throw std::string("Attempting to indirect uninitialized iterator");
 			if (index == parent->size())	// if the index of the current iterator is one past the elements
-				throw std::string("Attempting to inderect end() iterator");
+				throw std::string("Attempting to indirect end() iterator");
 			
 			return parent->codepoint(index);	// use codepoint of the U obj and the current iterator's index to get codepoint
 		}
@@ -243,7 +249,7 @@ class UIter {
 		}
 
 	private:
-		U *parent;	// parent U
+		const U *parent;	// parent U
 		int index;	// index into accumulated string
 };
 

@@ -2,6 +2,7 @@
 #include "P.h"
 #include <iostream>
 #include <iterator>
+#include <assert.h>
 
 using namespace std;
 
@@ -18,7 +19,7 @@ int main() {
 		
 		/* -------------- U testing ----------------*/
 		
-		cout << "\n\n------------- U testing ----------------\n\n";
+		cout << "\n------------- U testing ----------------\n\n";
 
 		// size and empty
 		cout << "Should be 8: " << u.size() << '\n'
@@ -89,7 +90,7 @@ int main() {
 
 		/* -------------- P testing ----------------*/
 		
-		cout << "\n\n------------- P testing ----------------\n\n";
+		cout << "\n------------- P testing ----------------\n\n";
 		
 		// readfile (should be error because already read a propfile)
 		try {
@@ -133,7 +134,7 @@ int main() {
 		
 		/* -------------- Op Overloading tests ----------------*/
 		
-		cout << "\n\n------------- Op Overloading tests ----------------\n\n";
+		cout << "\n------------- Op Overloading tests ----------------\n\n";
 
 		U badFruit;	// used to test invalid cases
 
@@ -349,16 +350,72 @@ int main() {
 		
 		
 		/* -------------- Iterator testing ----------------*/
-		cout << "\n\n------------- Op Overloading tests ----------------\n\n";
+		cout << "\n------------- Iterator tests ----------------\n\n";
 
+		// Default ctor (no arguments)
+		U::iterator itDef;
+		cout << "Default ctor worked\n";
+
+		// U(iter,iter)
+
+		// testing with const iterators
 		string vanilla = "vanilla";
-		U bean(vanilla.begin(), vanilla.begin() + 4);	// should be "vani"
+		U bean(vanilla.cbegin(), vanilla.cbegin() + 4);	// should be "vani"
 		cout << R"(bean should be "vani": )" << bean << '\n';
 
-		U::iterator it = bean.begin();
+		// testing for each loop (which uses U.begin(), U.end(), and the iterators' operator!=)
+		cout << "Printing bean's codepoints: ";
 		for (auto cp : bean)
-			cout << R"(Using for each loop with iterators, should be "vanilla": )" << *cp;
+			cout << hex << showbase << cp << ' ';
 		cout << '\n';	// print new line after above for loop
+
+		// begin()
+
+		// testing on a const obj
+		auto itBegin = redWine.begin();
+		cout << "Indirecting const redWine's begin() iterator, should be 'r': " << *itBegin << '\n';
+
+		// end()
+
+		// testing on a const obj
+		auto itEnd = redWine.end();
+		try {
+			*itEnd;
+		} catch (const string & s) {
+			cout << "Indirecting const redWine's end() iterator, should be error: " << s << '\n';
+		}
+
+		// testing on a const obj
+		cout << "Indirecting const redWine's end() - 1, should be 'e': " << *(--itEnd) << '\n';
+
+		// operator== and operator!=
+		assert(itBegin != itEnd);
+
+		// operator=
+		itDef = itBegin;
+		cout << "Successfully assigned itDef to itBegin, indirecting itDef, should be 'r': " << *itDef << '\n';
+
+		// operator== and operator!= (after itDef is now assigned itBegin)
+		assert(itDef == itBegin);
+
+		// copy ctor
+
+		// testing with const obj
+		auto itCBanana(constBanana.begin());
+		cout << "Copy ctor worked, indirecting itCBanana, should be 'b': " << *itCBanana << '\n';
+
+		// operator++(int) (post-incr)
+		cout << "Indirecting itBegin++, should be 'r': " << *(itBegin++) << '\n';
+		cout << "Indirecting itBegin, should be 'e': " << *itBegin << '\n';
+		cout << "Indirecting ++itBegin, should be 'd': " << *++itBegin << '\n';
+
+		// front() and back()
+		cout << "Printing front() of constBanana, should be 'b': " << constBanana.front() << '\n';
+		cout << "Printing end() of constBanana, should be 'r': " << constBanana.back() << '\n';
+	
+		// testing operator= again
+		itCBanana = itDef;
+		cout << "For some reason, operator= seems to be working even though the U* member is const, should be 'r': " << *itCBanana << '\n';
 
 		return 0;
 	}
